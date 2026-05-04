@@ -2,4 +2,4 @@
 
 React application for the RS School class components task.
 
-Hosting Link:
+Hosting Link: https://rs-school-task-1.vercel.app/
