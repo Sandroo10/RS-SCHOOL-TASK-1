@@ -1,7 +1,11 @@
 import { type ChangeEvent, Component, type FormEvent } from 'react';
+import styles from './index.module.css';
+
+const SEARCH_STORAGE_KEY = 'characterSearchTerm';
 
 interface SearchSectionProps {
   searchTerm: string;
+  onInitialLoad: (searchTerm: string) => void;
   onSearch: (searchTerm: string) => void;
 }
 
@@ -16,6 +20,13 @@ export class SearchSection extends Component<
   state: SearchSectionState = {
     inputValue: this.props.searchTerm,
   };
+
+  componentDidMount() {
+    const savedSearchTerm = localStorage.getItem(SEARCH_STORAGE_KEY) ?? '';
+
+    this.setState({ inputValue: savedSearchTerm });
+    this.props.onInitialLoad(savedSearchTerm);
+  }
 
   componentDidUpdate(prevProps: SearchSectionProps) {
     if (prevProps.searchTerm !== this.props.searchTerm) {
@@ -34,24 +45,29 @@ export class SearchSection extends Component<
 
     this.setState({ inputValue: trimmedSearchTerm });
 
+    if (trimmedSearchTerm === this.props.searchTerm) {
+      return;
+    }
+
+    localStorage.setItem(SEARCH_STORAGE_KEY, trimmedSearchTerm);
     this.props.onSearch(trimmedSearchTerm);
   };
 
   render() {
     return (
-      <section className="searchSection">
+      <section className={styles.searchSection}>
         <h1>Character Search</h1>
 
-        <form className="searchForm" onSubmit={this.handleSubmit}>
+        <form className={styles.searchForm} onSubmit={this.handleSubmit}>
           <input
             type="text"
             placeholder="Search..."
-            className="searchInput"
+            className={styles.searchInput}
             value={this.state.inputValue}
             onChange={this.handleInputChange}
           />
 
-          <button type="submit" className="submitButton">
+          <button type="submit" className={styles.submitButton}>
             Search
           </button>
         </form>

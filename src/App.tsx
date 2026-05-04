@@ -2,9 +2,8 @@ import { Component } from 'react';
 import { SearchSection } from './components/SearchSection';
 import { ResultsSection } from './components/ResultsSection';
 import { fetchCharacters, type CharacterCardData } from './api/characters';
-import './App.css';
+import styles from './App.module.css';
 
-const SEARCH_STORAGE_KEY = 'characterSearchTerm';
 const FIRST_PAGE = 1;
 
 interface AppState {
@@ -23,19 +22,16 @@ class App extends Component<AppProps, AppState> {
     errorMessage: '',
   };
 
-  componentDidMount() {
-    const savedSearchTerm = localStorage.getItem(SEARCH_STORAGE_KEY) ?? '';
-
-    this.setState({ searchTerm: savedSearchTerm });
-    this.loadCharacters(savedSearchTerm);
-  }
+  handleInitialLoad = (searchTerm: string) => {
+    this.setState({ searchTerm });
+    this.loadCharacters(searchTerm);
+  };
 
   handleSearch = (searchTerm: string) => {
     if (searchTerm === this.state.searchTerm) {
       return;
     }
 
-    localStorage.setItem(SEARCH_STORAGE_KEY, searchTerm);
     this.setState({ searchTerm });
     this.loadCharacters(searchTerm);
   };
@@ -56,19 +52,23 @@ class App extends Component<AppProps, AppState> {
         characters,
         isLoading: false,
       });
-    } catch {
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unable to load characters.';
+
       this.setState({
         characters: [],
         isLoading: false,
-        errorMessage: 'Unable to load characters.',
+        errorMessage,
       });
     }
   };
   render() {
     return (
-      <main className="app">
+      <main className={styles.app}>
         <SearchSection
           searchTerm={this.state.searchTerm}
+          onInitialLoad={this.handleInitialLoad}
           onSearch={this.handleSearch}
         />
 

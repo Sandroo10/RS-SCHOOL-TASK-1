@@ -12,10 +12,6 @@ interface ApiCharacter {
   name: string;
   status: string;
   species: string;
-  gender: string;
-  origin: {
-    name: string;
-  };
   location: {
     name: string;
   };
@@ -29,16 +25,6 @@ interface CharactersApiResponse {
 interface FetchCharactersParams {
   searchTerm: string;
   page: number;
-}
-
-export class ApiRequestError extends Error {
-  status: number;
-
-  constructor(message: string, status: number) {
-    super(message);
-    this.name = 'ApiRequestError';
-    this.status = status;
-  }
 }
 
 export async function fetchCharacters({
@@ -56,10 +42,11 @@ export async function fetchCharacters({
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new ApiRequestError(
-      'Characters could not be loaded. Try another search term.',
-      response.status
-    );
+    if (response.status === 404) {
+      throw new Error('No characters found. Try another name.');
+    }
+
+    throw new Error('Characters could not be loaded. Please try again later.');
   }
 
   const data: CharactersApiResponse = await response.json();

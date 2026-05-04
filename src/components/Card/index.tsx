@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import type { CharacterCardData } from '../../api/characters';
+import styles from './index.module.css';
 
 interface CardProps {
   character: CharacterCardData;
@@ -8,11 +9,11 @@ interface CardProps {
 export class Card extends Component<CardProps> {
   render() {
     return (
-      <div className="characterCard">
+      <div className={styles.characterCard}>
         <img
           src={this.props.character.image}
           alt={this.props.character.name}
-          className="characterImage"
+          className={styles.characterImage}
         />
 
         <div>

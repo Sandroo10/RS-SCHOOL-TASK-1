@@ -1,0 +1,22 @@
+.resultsSection {
+  min-height: 360px;
+  background: #ffffff;
+  border: 1px solid #d9e1e8;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.resultsSection h2 {
+  margin: 0;
+  color: #1f2933;
+}
+
+.loadingMessage,
+.errorMessage {
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+.errorMessage {
+  color: #b42318;
+}
