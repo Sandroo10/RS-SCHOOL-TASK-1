@@ -1,0 +1,26 @@
+.characterCard {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #d9e1e8;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.characterImage {
+  width: 84px;
+  height: 84px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.characterCard h3 {
+  margin: 0 0 6px;
+}
+
+.characterCard p {
+  margin: 0;
+  color: #52616f;
+}
