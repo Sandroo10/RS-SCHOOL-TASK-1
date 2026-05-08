@@ -19,7 +19,10 @@ export class ResultsSection extends Component<ResultsSectionProps> {
         <h2>Results Section</h2>
 
         {isLoading && (
-          <p className={styles.loadingMessage}>Loading characters...</p>
+          <div className={styles.loader} role="status" aria-live="polite">
+            <span className={styles.spinner} aria-hidden="true" />
+            <span>Loading characters...</span>
+          </div>
         )}
 
         {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}

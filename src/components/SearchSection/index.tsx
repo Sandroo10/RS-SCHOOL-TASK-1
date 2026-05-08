@@ -5,6 +5,7 @@ const SEARCH_STORAGE_KEY = 'characterSearchTerm';
 
 interface SearchSectionProps {
   searchTerm: string;
+  isLoading: boolean;
   onInitialLoad: (searchTerm: string) => void;
   onSearch: (searchTerm: string) => void;
 }
@@ -67,7 +68,11 @@ export class SearchSection extends Component<
             onChange={this.handleInputChange}
           />
 
-          <button type="submit" className={styles.submitButton}>
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={this.props.isLoading}
+          >
             Search
           </button>
         </form>

@@ -36,3 +36,8 @@
   font-size: 16px;
   cursor: pointer;
 }
+
+.submitButton:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}

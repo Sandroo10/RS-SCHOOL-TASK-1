@@ -68,6 +68,7 @@ class App extends Component<AppProps, AppState> {
       <main className={styles.app}>
         <SearchSection
           searchTerm={this.state.searchTerm}
+          isLoading={this.state.isLoading}
           onInitialLoad={this.handleInitialLoad}
           onSearch={this.handleSearch}
         />
