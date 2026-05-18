@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { characterCards } from '../../test-utils/characters';
 import { Card } from '.';
 
@@ -17,5 +18,21 @@ describe('Card', () => {
       'src',
       characterCards[0].image
     );
+  });
+
+  it('calls select handler when details button is clicked', async () => {
+    const user = userEvent.setup();
+    const onSelectCharacter = vi.fn();
+
+    render(
+      <Card
+        character={characterCards[0]}
+        onSelectCharacter={onSelectCharacter}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: 'View details' }));
+
+    expect(onSelectCharacter).toHaveBeenCalledWith(1);
   });
 });

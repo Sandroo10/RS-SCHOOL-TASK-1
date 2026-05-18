@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { characterCards } from '../../test-utils/characters';
 import { ResultsSection } from '.';
 
@@ -59,5 +60,30 @@ describe('ResultsSection', () => {
     expect(
       screen.getByRole('button', { name: 'Test error' })
     ).toBeInTheDocument();
+  });
+
+  it('calls page change handlers from pagination controls', async () => {
+    const user = userEvent.setup();
+    const onPageChange = vi.fn();
+
+    render(
+      <ResultsSection
+        {...defaultProps}
+        characters={characterCards}
+        isLoading={false}
+        errorMessage=""
+        currentPage={2}
+        totalPages={3}
+        onPageChange={onPageChange}
+      />
+    );
+
+    expect(screen.getByText('Page 2 of 3')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Previous' }));
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    expect(onPageChange).toHaveBeenNthCalledWith(1, 1);
+    expect(onPageChange).toHaveBeenNthCalledWith(2, 3);
   });
 });

@@ -43,7 +43,11 @@ export function SearchSection({
           onChange={handleInputChange}
         />
 
-        <button type="submit" className={styles.submitButton} disabled={isLoading}>
+        <button
+          type="submit"
+          className={styles.submitButton}
+          disabled={isLoading}
+        >
           Search
         </button>
       </form>

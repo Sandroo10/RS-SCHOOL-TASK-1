@@ -35,7 +35,11 @@ function detailsReducer(
         errorMessage: '',
       };
     case 'error':
-      return { character: null, isLoading: false, errorMessage: action.message };
+      return {
+        character: null,
+        isLoading: false,
+        errorMessage: action.message,
+      };
     default:
       return state;
   }

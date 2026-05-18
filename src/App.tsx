@@ -1,11 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Link,
-  Outlet,
-  Route,
-  Routes,
-  useSearchParams,
-} from 'react-router-dom';
+import { Link, Outlet, Route, Routes, useSearchParams } from 'react-router-dom';
 import { DetailsPanel } from './components/DetailsPanel';
 import { SearchSection } from './components/SearchSection';
 import { ResultsSection } from './components/ResultsSection';
@@ -141,7 +135,11 @@ function AboutPage() {
     <main className={styles.page}>
       <h1>About</h1>
       <p>Author: Sandro</p>
-      <a href="https://rs.school/courses/reactjs" target="_blank" rel="noreferrer">
+      <a
+        href="https://rs.school/courses/reactjs"
+        target="_blank"
+        rel="noreferrer"
+      >
         RS School React course
       </a>
       <Link to="/?page=1">Back to search</Link>
