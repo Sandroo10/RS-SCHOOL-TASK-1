@@ -1,0 +1,29 @@
+.app {
+  min-height: 100vh;
+  padding: 32px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 24px;
+  background: #f4f6f8;
+}
+
+.singleView {
+  display: grid;
+}
+
+.splitView {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 24px;
+  align-items: start;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 32px;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  background: #f4f6f8;
+  color: #1f2933;
+}

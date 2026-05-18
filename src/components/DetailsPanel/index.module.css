@@ -1,0 +1,64 @@
+.detailsPanel {
+  min-height: 360px;
+  background: #ffffff;
+  border: 1px solid #d9e1e8;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.closeButton {
+  padding: 10px 14px;
+  border: 1px solid #b8c4ce;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2933;
+  cursor: pointer;
+}
+
+.loader,
+.errorMessage {
+  margin-top: 16px;
+}
+
+.errorMessage {
+  color: #b42318;
+}
+
+.detailsCard {
+  margin-top: 16px;
+}
+
+.detailsCard img {
+  width: 100%;
+  max-width: 240px;
+  border-radius: 8px;
+}
+
+.detailsCard h2 {
+  margin: 16px 0 8px;
+}
+
+.detailsCard p {
+  margin: 0 0 16px;
+  color: #52616f;
+}
+
+.detailsCard dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.detailsCard dl div {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 12px;
+}
+
+.detailsCard dt {
+  font-weight: 700;
+}
+
+.detailsCard dd {
+  margin: 0;
+}
