@@ -3,9 +3,23 @@ import { describe, expect, it } from 'vitest';
 import { characterCards } from '../../test-utils/characters';
 import { ResultsSection } from '.';
 
+const defaultProps = {
+  currentPage: 1,
+  totalPages: 2,
+  onPageChange: () => undefined,
+  onSelectCharacter: () => undefined,
+};
+
 describe('ResultsSection', () => {
   it('shows loading spinner while data is loading', () => {
-    render(<ResultsSection characters={[]} isLoading={true} errorMessage="" />);
+    render(
+      <ResultsSection
+        {...defaultProps}
+        characters={[]}
+        isLoading={true}
+        errorMessage=""
+      />
+    );
 
     expect(screen.getByRole('status')).toHaveTextContent(
       'Loading characters...'
@@ -21,6 +35,7 @@ describe('ResultsSection', () => {
         characters={[]}
         isLoading={false}
         errorMessage="No characters found. Try another name."
+        {...defaultProps}
       />
     );
 
@@ -35,6 +50,7 @@ describe('ResultsSection', () => {
         characters={characterCards}
         isLoading={false}
         errorMessage=""
+        {...defaultProps}
       />
     );
 

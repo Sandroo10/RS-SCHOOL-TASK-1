@@ -4,9 +4,10 @@ import styles from './index.module.css';
 
 interface CardListProps {
   characters: CharacterCardData[];
+  onSelectCharacter?: (id: number) => void;
 }
 
-export function CardList({ characters }: CardListProps) {
+export function CardList({ characters, onSelectCharacter }: CardListProps) {
   if (characters.length === 0) {
     return <p className={styles.emptyResults}>No characters to display.</p>;
   }
@@ -14,7 +15,11 @@ export function CardList({ characters }: CardListProps) {
   return (
     <div className={styles.cardList}>
       {characters.map((character) => (
-        <Card key={character.id} character={character} />
+        <Card
+          key={character.id}
+          character={character}
+          onSelectCharacter={onSelectCharacter}
+        />
       ))}
     </div>
   );

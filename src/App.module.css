@@ -7,6 +7,17 @@
   background: #f4f6f8;
 }
 
+.singleView {
+  display: grid;
+}
+
+.splitView {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 24px;
+  align-items: start;
+}
+
 .page {
   min-height: 100vh;
   padding: 32px;

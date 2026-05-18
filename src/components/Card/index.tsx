@@ -3,11 +3,12 @@ import styles from './index.module.css';
 
 interface CardProps {
   character: CharacterCardData;
+  onSelectCharacter?: (id: number) => void;
 }
 
-export function Card({ character }: CardProps) {
+export function Card({ character, onSelectCharacter }: CardProps) {
   return (
-    <div className={styles.characterCard}>
+    <article className={styles.characterCard}>
       <img
         src={character.image}
         alt={character.name}
@@ -17,7 +18,16 @@ export function Card({ character }: CardProps) {
       <div>
         <h3>{character.name}</h3>
         <p>{character.description}</p>
+        {onSelectCharacter && (
+          <button
+            type="button"
+            className={styles.detailsButton}
+            onClick={() => onSelectCharacter(character.id)}
+          >
+            View details
+          </button>
+        )}
       </div>
-    </div>
+    </article>
   );
 }

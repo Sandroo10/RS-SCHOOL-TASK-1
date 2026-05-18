@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, Route, Routes, useSearchParams } from 'react-router-dom';
+import {
+  Link,
+  Outlet,
+  Route,
+  Routes,
+  useSearchParams,
+} from 'react-router-dom';
+import { DetailsPanel } from './components/DetailsPanel';
 import { SearchSection } from './components/SearchSection';
 import { ResultsSection } from './components/ResultsSection';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -15,27 +22,45 @@ function MainPage() {
     ''
   );
   const [characters, setCharacters] = useState<CharacterCardData[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const pageParam = Number(searchParams.get('page'));
+  const currentPage =
+    Number.isInteger(pageParam) && pageParam > 0 ? pageParam : FIRST_PAGE;
+  const detailsId = searchParams.get('details');
+
+  const updateParams = (page: number, nextDetailsId = detailsId) => {
+    const nextParams = new URLSearchParams();
+
+    nextParams.set('page', String(page));
+
+    if (nextDetailsId) {
+      nextParams.set('details', nextDetailsId);
+    }
+
+    setSearchParams(nextParams);
+  };
 
   useEffect(() => {
-    if (!searchParams.get('page')) {
-      setSearchParams({ page: String(FIRST_PAGE) }, { replace: true });
+    if (searchParams.get('page') !== String(currentPage)) {
+      updateParams(currentPage);
     }
-  }, [searchParams, setSearchParams]);
+  });
 
   useEffect(() => {
     let isActive = true;
 
     async function loadCharacters() {
       try {
-        const nextCharacters = await fetchCharacters({
+        const nextPage = await fetchCharacters({
           searchTerm,
-          page: FIRST_PAGE,
+          page: currentPage,
         });
 
         if (isActive) {
-          setCharacters(nextCharacters);
+          setCharacters(nextPage.characters);
+          setTotalPages(nextPage.totalPages);
           setErrorMessage('');
         }
       } catch (error) {
@@ -44,6 +69,7 @@ function MainPage() {
 
         if (isActive) {
           setCharacters([]);
+          setTotalPages(1);
           setErrorMessage(nextErrorMessage);
         }
       } finally {
@@ -58,7 +84,7 @@ function MainPage() {
     return () => {
       isActive = false;
     };
-  }, [searchTerm]);
+  }, [currentPage, searchTerm]);
 
   const handleSearch = (nextSearchTerm: string) => {
     if (nextSearchTerm === searchTerm) {
@@ -71,6 +97,20 @@ function MainPage() {
     setSearchParams({ page: String(FIRST_PAGE) });
   };
 
+  const handlePageChange = (page: number) => {
+    setIsLoading(true);
+    setErrorMessage('');
+    updateParams(page);
+  };
+
+  const handleSelectCharacter = (id: number) => {
+    updateParams(currentPage, String(id));
+  };
+
+  const handleCloseDetails = () => {
+    updateParams(currentPage, null);
+  };
+
   return (
     <main className={styles.app}>
       <SearchSection
@@ -79,11 +119,19 @@ function MainPage() {
         onSearch={handleSearch}
       />
 
-      <ResultsSection
-        characters={characters}
-        isLoading={isLoading}
-        errorMessage={errorMessage}
-      />
+      <div className={detailsId ? styles.splitView : styles.singleView}>
+        <ResultsSection
+          characters={characters}
+          isLoading={isLoading}
+          errorMessage={errorMessage}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onSelectCharacter={handleSelectCharacter}
+        />
+
+        <Outlet context={{ onClose: handleCloseDetails }} />
+      </div>
     </main>
   );
 }
@@ -114,7 +162,9 @@ function NotFoundPage() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<MainPage />} />
+      <Route path="/" element={<MainPage />}>
+        <Route index element={<DetailsPanel />} />
+      </Route>
       <Route path="/about" element={<AboutPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

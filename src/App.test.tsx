@@ -12,6 +12,11 @@ vi.mock('./api/characters', () => ({
 
 const fetchCharactersMock = vi.mocked(fetchCharacters);
 
+const charactersPage = {
+  characters: characterCards,
+  totalPages: 42,
+};
+
 function renderApp() {
   return render(
     <MemoryRouter initialEntries={['/?page=1']}>
@@ -26,7 +31,7 @@ describe('App', () => {
   });
 
   it('loads first page of all characters on initial render', async () => {
-    fetchCharactersMock.mockResolvedValue(characterCards);
+    fetchCharactersMock.mockResolvedValue(charactersPage);
 
     renderApp();
 
@@ -40,7 +45,10 @@ describe('App', () => {
 
   it('uses saved search term for initial request and input value', async () => {
     localStorage.setItem('characterSearchTerm', 'rick');
-    fetchCharactersMock.mockResolvedValue([characterCards[0]]);
+    fetchCharactersMock.mockResolvedValue({
+      characters: [characterCards[0]],
+      totalPages: 1,
+    });
 
     renderApp();
 
@@ -67,8 +75,8 @@ describe('App', () => {
   it('searches with trimmed term and saves it to localStorage', async () => {
     const user = userEvent.setup();
     fetchCharactersMock
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([characterCards[1]]);
+      .mockResolvedValueOnce({ characters: [], totalPages: 1 })
+      .mockResolvedValueOnce({ characters: [characterCards[1]], totalPages: 1 });
 
     renderApp();
 
@@ -89,7 +97,10 @@ describe('App', () => {
   it('does not request again when search term has not changed', async () => {
     const user = userEvent.setup();
     localStorage.setItem('characterSearchTerm', 'rick');
-    fetchCharactersMock.mockResolvedValue([characterCards[0]]);
+    fetchCharactersMock.mockResolvedValue({
+      characters: [characterCards[0]],
+      totalPages: 1,
+    });
 
     renderApp();
 

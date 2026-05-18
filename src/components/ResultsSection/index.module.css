@@ -42,3 +42,24 @@
 .errorMessage {
   color: #b42318;
 }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  border: 1px solid #b8c4ce;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2933;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}

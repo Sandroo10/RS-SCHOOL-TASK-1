@@ -4,6 +4,9 @@ import { fetchCharacters } from './characters';
 type FetchMock = (input: URL) => Promise<Response>;
 
 const apiResponse = {
+  info: {
+    pages: 42,
+  },
   results: [
     {
       id: 1,
@@ -36,14 +39,17 @@ describe('fetchCharacters', () => {
 
     expect(calledUrl.searchParams.get('page')).toBe('1');
     expect(calledUrl.searchParams.has('name')).toBe(false);
-    expect(characters).toEqual([
-      {
-        id: 1,
-        name: 'Rick Sanchez',
-        description: 'Human | Alive | Last seen in Citadel of Ricks',
-        image: 'rick.jpeg',
-      },
-    ]);
+    expect(characters).toEqual({
+      characters: [
+        {
+          id: 1,
+          name: 'Rick Sanchez',
+          description: 'Human | Alive | Last seen in Citadel of Ricks',
+          image: 'rick.jpeg',
+        },
+      ],
+      totalPages: 42,
+    });
   });
 
   it('includes search term in the request', async () => {
