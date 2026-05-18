@@ -1,82 +1,52 @@
-import { type ChangeEvent, Component, type FormEvent } from 'react';
+import { type ChangeEvent, type FormEvent, useState } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './index.module.css';
-
-const SEARCH_STORAGE_KEY = 'characterSearchTerm';
 
 interface SearchSectionProps {
   searchTerm: string;
   isLoading: boolean;
-  onInitialLoad: (searchTerm: string) => void;
   onSearch: (searchTerm: string) => void;
 }
 
-interface SearchSectionState {
-  inputValue: string;
-}
+export function SearchSection({
+  searchTerm,
+  isLoading,
+  onSearch,
+}: SearchSectionProps) {
+  const [inputValue, setInputValue] = useState(searchTerm);
 
-export class SearchSection extends Component<
-  SearchSectionProps,
-  SearchSectionState
-> {
-  state: SearchSectionState = {
-    inputValue: this.props.searchTerm,
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
   };
 
-  componentDidMount() {
-    const savedSearchTerm = localStorage.getItem(SEARCH_STORAGE_KEY) ?? '';
-
-    this.setState({ inputValue: savedSearchTerm });
-    this.props.onInitialLoad(savedSearchTerm);
-  }
-
-  componentDidUpdate(prevProps: SearchSectionProps) {
-    if (prevProps.searchTerm !== this.props.searchTerm) {
-      this.setState({ inputValue: this.props.searchTerm });
-    }
-  }
-
-  handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ inputValue: event.target.value });
-  };
-
-  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const trimmedSearchTerm = this.state.inputValue.trim();
-
-    this.setState({ inputValue: trimmedSearchTerm });
-
-    if (trimmedSearchTerm === this.props.searchTerm) {
-      return;
-    }
-
-    localStorage.setItem(SEARCH_STORAGE_KEY, trimmedSearchTerm);
-    this.props.onSearch(trimmedSearchTerm);
+    const trimmedSearchTerm = inputValue.trim();
+    setInputValue(trimmedSearchTerm);
+    onSearch(trimmedSearchTerm);
   };
 
-  render() {
-    return (
-      <section className={styles.searchSection}>
+  return (
+    <section className={styles.searchSection}>
+      <nav className={styles.navigation}>
         <h1>Character Search</h1>
+        <Link to="/about">About</Link>
+      </nav>
 
-        <form className={styles.searchForm} onSubmit={this.handleSubmit}>
-          <input
-            type="text"
-            placeholder="Search..."
-            className={styles.searchInput}
-            value={this.state.inputValue}
-            onChange={this.handleInputChange}
-          />
+      <form className={styles.searchForm} onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Search..."
+          className={styles.searchInput}
+          value={inputValue}
+          onChange={handleInputChange}
+        />
 
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={this.props.isLoading}
-          >
-            Search
-          </button>
-        </form>
-      </section>
-    );
-  }
+        <button type="submit" className={styles.submitButton} disabled={isLoading}>
+          Search
+        </button>
+      </form>
+    </section>
+  );
 }

@@ -1,35 +1,20 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import styles from './index.module.css';
 
-interface ErrorTestButtonState {
-  shouldThrowError: boolean;
-}
+export function ErrorTestButton() {
+  const [shouldThrowError, setShouldThrowError] = useState(false);
 
-export class ErrorTestButton extends Component<
-  Record<string, never>,
-  ErrorTestButtonState
-> {
-  state: ErrorTestButtonState = {
-    shouldThrowError: false,
-  };
-
-  handleClick = () => {
-    this.setState({ shouldThrowError: true });
-  };
-
-  render() {
-    if (this.state.shouldThrowError) {
-      throw new Error('Test application error');
-    }
-
-    return (
-      <button
-        type="button"
-        className={styles.errorTestButton}
-        onClick={this.handleClick}
-      >
-        Test error
-      </button>
-    );
+  if (shouldThrowError) {
+    throw new Error('Test application error');
   }
+
+  return (
+    <button
+      type="button"
+      className={styles.errorTestButton}
+      onClick={() => setShouldThrowError(true)}
+    >
+      Test error
+    </button>
+  );
 }

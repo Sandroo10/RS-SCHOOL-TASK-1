@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { characterCards } from './test-utils/characters';
 import { fetchCharacters } from './api/characters';
@@ -11,6 +12,14 @@ vi.mock('./api/characters', () => ({
 
 const fetchCharactersMock = vi.mocked(fetchCharacters);
 
+function renderApp() {
+  return render(
+    <MemoryRouter initialEntries={['/?page=1']}>
+      <App />
+    </MemoryRouter>
+  );
+}
+
 describe('App', () => {
   beforeEach(() => {
     fetchCharactersMock.mockReset();
@@ -19,7 +28,7 @@ describe('App', () => {
   it('loads first page of all characters on initial render', async () => {
     fetchCharactersMock.mockResolvedValue(characterCards);
 
-    render(<App />);
+    renderApp();
 
     expect(fetchCharactersMock).toHaveBeenCalledWith({
       searchTerm: '',
@@ -33,7 +42,7 @@ describe('App', () => {
     localStorage.setItem('characterSearchTerm', 'rick');
     fetchCharactersMock.mockResolvedValue([characterCards[0]]);
 
-    render(<App />);
+    renderApp();
 
     expect(screen.getByRole('textbox')).toHaveValue('rick');
     await waitFor(() => {
@@ -47,7 +56,7 @@ describe('App', () => {
   it('shows loading state and disables search button while request is pending', async () => {
     fetchCharactersMock.mockReturnValue(new Promise(() => undefined));
 
-    render(<App />);
+    renderApp();
 
     expect(await screen.findByRole('status')).toHaveTextContent(
       'Loading characters...'
@@ -61,7 +70,7 @@ describe('App', () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([characterCards[1]]);
 
-    render(<App />);
+    renderApp();
 
     await screen.findByText('No characters to display.');
     await user.type(screen.getByRole('textbox'), '  morty  ');
@@ -82,7 +91,7 @@ describe('App', () => {
     localStorage.setItem('characterSearchTerm', 'rick');
     fetchCharactersMock.mockResolvedValue([characterCards[0]]);
 
-    render(<App />);
+    renderApp();
 
     await screen.findByText('Rick Sanchez');
     await user.click(screen.getByRole('button', { name: 'Search' }));
@@ -95,7 +104,7 @@ describe('App', () => {
       new Error('No characters found. Try another name.')
     );
 
-    render(<App />);
+    renderApp();
 
     expect(
       await screen.findByText('No characters found. Try another name.')
