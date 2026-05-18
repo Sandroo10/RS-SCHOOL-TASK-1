@@ -91,6 +91,12 @@ function MainPage() {
     setSearchParams({ page: String(FIRST_PAGE) });
   };
 
+  const handleSearchTermChange = () => {
+    if (currentPage !== FIRST_PAGE || detailsId) {
+      setSearchParams({ page: String(FIRST_PAGE) });
+    }
+  };
+
   const handlePageChange = (page: number) => {
     setIsLoading(true);
     setErrorMessage('');
@@ -111,6 +117,7 @@ function MainPage() {
         searchTerm={searchTerm}
         isLoading={isLoading}
         onSearch={handleSearch}
+        onSearchTermChange={handleSearchTermChange}
       />
 
       <div className={detailsId ? styles.splitView : styles.singleView}>

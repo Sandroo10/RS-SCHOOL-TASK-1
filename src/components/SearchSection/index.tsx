@@ -6,17 +6,20 @@ interface SearchSectionProps {
   searchTerm: string;
   isLoading: boolean;
   onSearch: (searchTerm: string) => void;
+  onSearchTermChange: () => void;
 }
 
 export function SearchSection({
   searchTerm,
   isLoading,
   onSearch,
+  onSearchTermChange,
 }: SearchSectionProps) {
   const [inputValue, setInputValue] = useState(searchTerm);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
+    onSearchTermChange();
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

@@ -5,10 +5,20 @@ import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import { SearchSection } from '.';
 
-function renderSearchSection(props: ComponentProps<typeof SearchSection>) {
+function renderSearchSection(
+  props: Partial<ComponentProps<typeof SearchSection>> = {}
+) {
+  const defaultProps: ComponentProps<typeof SearchSection> = {
+    searchTerm: '',
+    isLoading: false,
+    onSearch: vi.fn(),
+    onSearchTermChange: vi.fn(),
+    ...props,
+  };
+
   return render(
     <MemoryRouter>
-      <SearchSection {...props} />
+      <SearchSection {...defaultProps} />
     </MemoryRouter>
   );
 }
@@ -36,16 +46,16 @@ describe('SearchSection', () => {
 
   it('updates input when user types', async () => {
     const user = userEvent.setup();
+    const onSearchTermChange = vi.fn();
 
     renderSearchSection({
-      searchTerm: '',
-      isLoading: false,
-      onSearch: vi.fn(),
+      onSearchTermChange,
     });
 
     await user.type(screen.getByRole('textbox'), 'morty');
 
     expect(screen.getByRole('textbox')).toHaveValue('morty');
+    expect(onSearchTermChange).toHaveBeenCalled();
   });
 
   it('trims and saves changed search term on submit', async () => {

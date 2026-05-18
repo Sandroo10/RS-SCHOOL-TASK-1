@@ -155,6 +155,19 @@ describe('App', () => {
     });
   });
 
+  it('resets URL to first page when search input changes', async () => {
+    const user = userEvent.setup();
+    fetchCharactersMock.mockResolvedValue(charactersPage);
+    fetchCharacterDetailsMock.mockResolvedValue(characterDetails);
+
+    renderApp('/?page=3&details=1');
+
+    await screen.findAllByRole('button', { name: 'View details' });
+    await user.type(screen.getByRole('textbox'), 'm');
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/?page=1');
+  });
+
   it('opens and closes details panel through URL params', async () => {
     const user = userEvent.setup();
     fetchCharactersMock.mockResolvedValue(charactersPage);
