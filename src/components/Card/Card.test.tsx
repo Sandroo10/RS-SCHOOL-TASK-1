@@ -35,4 +35,45 @@ describe('Card', () => {
 
     expect(onSelectCharacter).toHaveBeenCalledWith(1);
   });
+
+  it('opens details when card content is clicked', async () => {
+    const user = userEvent.setup();
+    const onSelectCharacter = vi.fn();
+
+    render(
+      <Card
+        character={characterCards[0]}
+        onSelectCharacter={onSelectCharacter}
+      />
+    );
+
+    await user.click(screen.getByRole('heading', { name: 'Rick Sanchez' }));
+
+    expect(onSelectCharacter).toHaveBeenCalledWith(1);
+  });
+
+  it('toggles selection from checkbox without opening details', async () => {
+    const user = userEvent.setup();
+    const onSelectCharacter = vi.fn();
+
+    render(
+      <Card
+        character={characterCards[0]}
+        onSelectCharacter={onSelectCharacter}
+      />
+    );
+
+    const checkbox = screen.getByRole('checkbox', {
+      name: 'Select Rick Sanchez',
+    });
+
+    await user.click(checkbox);
+
+    expect(checkbox).toBeChecked();
+    expect(onSelectCharacter).not.toHaveBeenCalled();
+
+    await user.click(checkbox);
+
+    expect(checkbox).not.toBeChecked();
+  });
 });

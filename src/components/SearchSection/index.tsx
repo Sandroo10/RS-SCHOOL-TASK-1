@@ -1,5 +1,6 @@
 import { type ChangeEvent, type FormEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ThemeSelector } from '../ThemeSelector';
 import styles from './index.module.css';
 
 interface SearchSectionProps {
@@ -34,7 +35,10 @@ export function SearchSection({
     <section className={styles.searchSection}>
       <nav className={styles.navigation}>
         <h1>Character Search</h1>
-        <Link to="/about">About</Link>
+        <div className={styles.navActions}>
+          <ThemeSelector />
+          <Link to="/about">About</Link>
+        </div>
       </nav>
 
       <form className={styles.searchForm} onSubmit={handleSubmit}>

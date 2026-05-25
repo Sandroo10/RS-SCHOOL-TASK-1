@@ -3,6 +3,8 @@ import { Link, Outlet, Route, Routes, useSearchParams } from 'react-router-dom';
 import { DetailsPanel } from './components/DetailsPanel';
 import { SearchSection } from './components/SearchSection';
 import { ResultsSection } from './components/ResultsSection';
+import { SelectedItemsFlyout } from './components/SelectedItemsFlyout';
+import { ThemeProvider } from './context/ThemeProvider';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { fetchCharacters, type CharacterCardData } from './api/characters';
 import styles from './App.module.css';
@@ -133,6 +135,8 @@ function MainPage() {
 
         <Outlet context={{ onClose: handleCloseDetails }} />
       </div>
+
+      <SelectedItemsFlyout />
     </main>
   );
 }
@@ -166,12 +170,14 @@ function NotFoundPage() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<MainPage />}>
-        <Route index element={<DetailsPanel />} />
-      </Route>
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    <ThemeProvider>
+      <Routes>
+        <Route path="/" element={<MainPage />}>
+          <Route index element={<DetailsPanel />} />
+        </Route>
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </ThemeProvider>
   );
 }

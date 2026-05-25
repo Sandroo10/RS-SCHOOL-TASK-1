@@ -155,6 +155,28 @@ describe('App', () => {
     });
   });
 
+  it('keeps selected items visible when navigating between pages', async () => {
+    const user = userEvent.setup();
+    fetchCharactersMock.mockResolvedValue(charactersPage);
+
+    renderApp();
+
+    await screen.findByText('Rick Sanchez');
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select Rick Sanchez' })
+    );
+
+    expect(screen.getByLabelText('Selected items')).toHaveTextContent(
+      '1 selected'
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    expect(screen.getByLabelText('Selected items')).toHaveTextContent(
+      '1 selected'
+    );
+  });
+
   it('resets URL to first page when search input changes', async () => {
     const user = userEvent.setup();
     fetchCharactersMock.mockResolvedValue(charactersPage);

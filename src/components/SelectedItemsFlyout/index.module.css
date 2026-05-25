@@ -1,0 +1,29 @@
+.flyout {
+  position: sticky;
+  bottom: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  background: var(--flyout-color);
+  color: var(--text-color);
+  box-shadow: 0 12px 32px rgb(15 23 42 / 18%);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  padding: 8px 12px;
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  background: var(--surface-color);
+  color: var(--accent-color);
+  cursor: pointer;
+}

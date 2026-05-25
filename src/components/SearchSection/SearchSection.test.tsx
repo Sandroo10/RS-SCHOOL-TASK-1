@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import type { ComponentProps } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
+import { ThemeProvider } from '../../context/ThemeProvider';
 import { SearchSection } from '.';
 
 function renderSearchSection(
@@ -18,7 +19,9 @@ function renderSearchSection(
 
   return render(
     <MemoryRouter>
-      <SearchSection {...defaultProps} />
+      <ThemeProvider>
+        <SearchSection {...defaultProps} />
+      </ThemeProvider>
     </MemoryRouter>
   );
 }

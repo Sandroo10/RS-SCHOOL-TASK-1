@@ -2,22 +2,22 @@
   min-height: 100vh;
   padding: 32px;
   display: grid;
-  background: #f4f6f8;
+  background: var(--page-bg-color);
 }
 
 .fallbackSection {
-  background: #ffffff;
-  border: 1px solid #d9e1e8;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 24px;
 }
 
 .fallbackSection h1 {
   margin: 0 0 12px;
-  color: #1f2933;
+  color: var(--text-color);
 }
 
 .fallbackSection p {
   margin: 0;
-  color: #52616f;
+  color: var(--muted-text-color);
 }

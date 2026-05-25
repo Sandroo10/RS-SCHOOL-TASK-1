@@ -3,7 +3,7 @@
   padding: 10px 14px;
   border: 1px solid #b42318;
   border-radius: 6px;
-  background: #ffffff;
+  background: var(--surface-color);
   color: #b42318;
   cursor: pointer;
 }

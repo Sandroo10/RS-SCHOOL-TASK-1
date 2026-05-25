@@ -4,7 +4,8 @@
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 24px;
-  background: #f4f6f8;
+  background: var(--page-bg-color);
+  color: var(--text-color);
 }
 
 .singleView {
@@ -24,6 +25,10 @@
   display: grid;
   align-content: start;
   gap: 16px;
-  background: #f4f6f8;
-  color: #1f2933;
+  background: var(--page-bg-color);
+  color: var(--text-color);
+}
+
+.page a {
+  color: var(--accent-color);
 }
