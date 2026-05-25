@@ -1,0 +1,23 @@
+.app {
+  min-height: 100vh;
+  padding: 32px;
+  display: grid;
+  background: var(--page-bg-color);
+}
+
+.fallbackSection {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.fallbackSection h1 {
+  margin: 0 0 12px;
+  color: var(--text-color);
+}
+
+.fallbackSection p {
+  margin: 0;
+  color: var(--muted-text-color);
+}

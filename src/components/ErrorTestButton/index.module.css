@@ -1,0 +1,13 @@
+.errorTestButton {
+  margin-top: 20px;
+  padding: 10px 14px;
+  border: 1px solid #b42318;
+  border-radius: 6px;
+  background: var(--surface-color);
+  color: #b42318;
+  cursor: pointer;
+}
+
+.errorTestButton:hover {
+  background: #fff5f5;
+}
