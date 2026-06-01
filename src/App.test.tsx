@@ -47,9 +47,11 @@ describe('App', () => {
 
     renderApp();
 
-    expect(fetchCharactersMock).toHaveBeenCalledWith({
-      searchTerm: '',
-      page: 1,
+    await waitFor(() => {
+      expect(fetchCharactersMock).toHaveBeenCalledWith({
+        searchTerm: '',
+        page: 1,
+      });
     });
     expect(await screen.findByText('Rick Sanchez')).toBeInTheDocument();
     expect(screen.getByText('Morty Smith')).toBeInTheDocument();
@@ -155,6 +157,33 @@ describe('App', () => {
     });
   });
 
+  it('reuses cached pages and refreshes the active page on demand', async () => {
+    const user = userEvent.setup();
+    fetchCharactersMock.mockResolvedValue(charactersPage);
+
+    renderApp();
+
+    await screen.findByText('Rick Sanchez');
+    expect(fetchCharactersMock).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    await waitFor(() => {
+      expect(fetchCharactersMock).toHaveBeenCalledTimes(2);
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Previous' }));
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/?page=1');
+    expect(fetchCharactersMock).toHaveBeenCalledTimes(2);
+
+    await user.click(screen.getByRole('button', { name: 'Refresh' }));
+
+    await waitFor(() => {
+      expect(fetchCharactersMock).toHaveBeenCalledTimes(3);
+    });
+  });
+
   it('keeps selected items visible when navigating between pages', async () => {
     const user = userEvent.setup();
     fetchCharactersMock.mockResolvedValue(charactersPage);
@@ -212,6 +241,69 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: 'Close' }));
 
     expect(screen.getByTestId('location')).toHaveTextContent('/?page=1');
+  });
+
+  it('shows details loading state', async () => {
+    const user = userEvent.setup();
+    fetchCharactersMock.mockResolvedValue(charactersPage);
+    fetchCharacterDetailsMock.mockReturnValue(new Promise(() => undefined));
+
+    renderApp();
+
+    await screen.findByText('Rick Sanchez');
+    await user.click(
+      screen.getAllByRole('button', { name: 'View details' })[0]
+    );
+
+    expect(await screen.findByText('Loading details...')).toBeInTheDocument();
+  });
+
+  it('shows details error state', async () => {
+    const user = userEvent.setup();
+    fetchCharactersMock.mockResolvedValue(charactersPage);
+    fetchCharacterDetailsMock.mockRejectedValue(
+      new Error('Character details could not be loaded.')
+    );
+
+    renderApp();
+
+    await screen.findByText('Rick Sanchez');
+    await user.click(
+      screen.getAllByRole('button', { name: 'View details' })[0]
+    );
+
+    expect(
+      await screen.findByText('Character details could not be loaded.')
+    ).toBeInTheDocument();
+  });
+
+  it('caches details and refreshes details on demand', async () => {
+    const user = userEvent.setup();
+    fetchCharactersMock.mockResolvedValue(charactersPage);
+    fetchCharacterDetailsMock.mockResolvedValue(characterDetails);
+
+    renderApp();
+
+    await screen.findByText('Rick Sanchez');
+    await user.click(
+      screen.getAllByRole('button', { name: 'View details' })[0]
+    );
+
+    expect(await screen.findByText('Gender')).toBeInTheDocument();
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+    await user.click(
+      screen.getAllByRole('button', { name: 'View details' })[0]
+    );
+
+    expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole('button', { name: 'Refresh details' }));
+
+    await waitFor(() => {
+      expect(fetchCharacterDetailsMock).toHaveBeenCalledTimes(2);
+    });
   });
 
   it('renders about page from navigation route', () => {

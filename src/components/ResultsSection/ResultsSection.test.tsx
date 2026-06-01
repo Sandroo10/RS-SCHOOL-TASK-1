@@ -9,6 +9,7 @@ const defaultProps = {
   totalPages: 2,
   onPageChange: () => undefined,
   onSelectCharacter: () => undefined,
+  onRefresh: () => undefined,
 };
 
 describe('ResultsSection', () => {
@@ -85,5 +86,24 @@ describe('ResultsSection', () => {
 
     expect(onPageChange).toHaveBeenNthCalledWith(1, 1);
     expect(onPageChange).toHaveBeenNthCalledWith(2, 3);
+  });
+
+  it('calls refresh handler from refresh button', async () => {
+    const user = userEvent.setup();
+    const onRefresh = vi.fn();
+
+    render(
+      <ResultsSection
+        {...defaultProps}
+        characters={characterCards}
+        isLoading={false}
+        errorMessage=""
+        onRefresh={onRefresh}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Refresh' }));
+
+    expect(onRefresh).toHaveBeenCalled();
   });
 });

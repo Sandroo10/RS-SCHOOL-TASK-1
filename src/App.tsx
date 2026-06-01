@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link, Outlet, Route, Routes, useSearchParams } from 'react-router-dom';
 import { DetailsPanel } from './components/DetailsPanel';
 import { SearchSection } from './components/SearchSection';
@@ -6,25 +7,35 @@ import { ResultsSection } from './components/ResultsSection';
 import { SelectedItemsFlyout } from './components/SelectedItemsFlyout';
 import { ThemeProvider } from './context/ThemeProvider';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { fetchCharacters, type CharacterCardData } from './api/characters';
+import {
+  characterListQueryKey,
+  useCharactersQuery,
+} from './query/characterQueries';
+import { QueryProvider } from './query/QueryProvider';
 import styles from './App.module.css';
 
 const FIRST_PAGE = 1;
 
 function MainPage() {
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useLocalStorage(
     'characterSearchTerm',
     ''
   );
-  const [characters, setCharacters] = useState<CharacterCardData[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
   const pageParam = Number(searchParams.get('page'));
   const currentPage =
     Number.isInteger(pageParam) && pageParam > 0 ? pageParam : FIRST_PAGE;
   const detailsId = searchParams.get('details');
+  const charactersQuery = useCharactersQuery({
+    searchTerm,
+    page: currentPage,
+  });
+  const characters = charactersQuery.data?.characters ?? [];
+  const totalPages = charactersQuery.data?.totalPages ?? 1;
+  const errorMessage =
+    charactersQuery.error instanceof Error ? charactersQuery.error.message : '';
+  const isLoading = charactersQuery.isPending || charactersQuery.isFetching;
 
   const updateParams = (page: number, nextDetailsId = detailsId) => {
     const nextParams = new URLSearchParams();
@@ -44,51 +55,11 @@ function MainPage() {
     }
   });
 
-  useEffect(() => {
-    let isActive = true;
-
-    async function loadCharacters() {
-      try {
-        const nextPage = await fetchCharacters({
-          searchTerm,
-          page: currentPage,
-        });
-
-        if (isActive) {
-          setCharacters(nextPage.characters);
-          setTotalPages(nextPage.totalPages);
-          setErrorMessage('');
-        }
-      } catch (error) {
-        const nextErrorMessage =
-          error instanceof Error ? error.message : 'Unable to load characters.';
-
-        if (isActive) {
-          setCharacters([]);
-          setTotalPages(1);
-          setErrorMessage(nextErrorMessage);
-        }
-      } finally {
-        if (isActive) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadCharacters();
-
-    return () => {
-      isActive = false;
-    };
-  }, [currentPage, searchTerm]);
-
   const handleSearch = (nextSearchTerm: string) => {
     if (nextSearchTerm === searchTerm) {
       return;
     }
 
-    setIsLoading(true);
-    setErrorMessage('');
     setSearchTerm(nextSearchTerm);
     setSearchParams({ page: String(FIRST_PAGE) });
   };
@@ -100,8 +71,6 @@ function MainPage() {
   };
 
   const handlePageChange = (page: number) => {
-    setIsLoading(true);
-    setErrorMessage('');
     updateParams(page);
   };
 
@@ -111,6 +80,12 @@ function MainPage() {
 
   const handleCloseDetails = () => {
     updateParams(currentPage, null);
+  };
+
+  const handleRefreshCharacters = () => {
+    void queryClient.invalidateQueries({
+      queryKey: characterListQueryKey(searchTerm, currentPage),
+    });
   };
 
   return (
@@ -131,6 +106,7 @@ function MainPage() {
           totalPages={totalPages}
           onPageChange={handlePageChange}
           onSelectCharacter={handleSelectCharacter}
+          onRefresh={handleRefreshCharacters}
         />
 
         <Outlet context={{ onClose: handleCloseDetails }} />
@@ -170,14 +146,16 @@ function NotFoundPage() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <Routes>
-        <Route path="/" element={<MainPage />}>
-          <Route index element={<DetailsPanel />} />
-        </Route>
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </ThemeProvider>
+    <QueryProvider>
+      <ThemeProvider>
+        <Routes>
+          <Route path="/" element={<MainPage />}>
+            <Route index element={<DetailsPanel />} />
+          </Route>
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </ThemeProvider>
+    </QueryProvider>
   );
 }

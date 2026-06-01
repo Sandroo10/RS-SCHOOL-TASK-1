@@ -1,99 +1,33 @@
-import { useEffect, useReducer } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import {
-  fetchCharacterDetails,
-  type CharacterDetailsData,
-} from '../../api/characters';
+  characterDetailsQueryKey,
+  useCharacterDetailsQuery,
+} from '../../query/characterQueries';
 import styles from './index.module.css';
 
 interface DetailsOutletContext {
   onClose: () => void;
 }
 
-interface DetailsState {
-  character: CharacterDetailsData | null;
-  isLoading: boolean;
-  errorMessage: string;
-}
-
-type DetailsAction =
-  | { type: 'loading' }
-  | { type: 'success'; character: CharacterDetailsData }
-  | { type: 'error'; message: string };
-
-function detailsReducer(
-  state: DetailsState,
-  action: DetailsAction
-): DetailsState {
-  switch (action.type) {
-    case 'loading':
-      return { character: null, isLoading: true, errorMessage: '' };
-    case 'success':
-      return {
-        character: action.character,
-        isLoading: false,
-        errorMessage: '',
-      };
-    case 'error':
-      return {
-        character: null,
-        isLoading: false,
-        errorMessage: action.message,
-      };
-    default:
-      return state;
-  }
-}
-
-const initialDetailsState: DetailsState = {
-  character: null,
-  isLoading: false,
-  errorMessage: '',
-};
-
 export function DetailsPanel() {
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const { onClose } = useOutletContext<DetailsOutletContext>();
   const detailsId = searchParams.get('details');
-  const [{ character, isLoading, errorMessage }, dispatch] = useReducer(
-    detailsReducer,
-    initialDetailsState
-  );
+  const detailsQuery = useCharacterDetailsQuery(detailsId);
+  const character = detailsQuery.data ?? null;
+  const isLoading = detailsQuery.isPending || detailsQuery.isFetching;
+  const errorMessage =
+    detailsQuery.error instanceof Error ? detailsQuery.error.message : '';
 
-  useEffect(() => {
-    if (!detailsId) {
-      return;
+  const handleRefreshDetails = () => {
+    if (detailsId) {
+      void queryClient.invalidateQueries({
+        queryKey: characterDetailsQueryKey(detailsId),
+      });
     }
-
-    let isActive = true;
-
-    async function loadDetails(id: string) {
-      dispatch({ type: 'loading' });
-
-      try {
-        const nextCharacter = await fetchCharacterDetails(id);
-
-        if (isActive) {
-          dispatch({ type: 'success', character: nextCharacter });
-        }
-      } catch (error) {
-        const nextErrorMessage =
-          error instanceof Error
-            ? error.message
-            : 'Character details could not be loaded.';
-
-        if (isActive) {
-          dispatch({ type: 'error', message: nextErrorMessage });
-        }
-      }
-    }
-
-    void loadDetails(detailsId);
-
-    return () => {
-      isActive = false;
-    };
-  }, [detailsId]);
+  };
 
   if (!detailsId) {
     return null;
@@ -103,6 +37,13 @@ export function DetailsPanel() {
     <aside className={styles.detailsPanel}>
       <button type="button" className={styles.closeButton} onClick={onClose}>
         Close
+      </button>
+      <button
+        type="button"
+        className={styles.refreshButton}
+        onClick={handleRefreshDetails}
+      >
+        Refresh details
       </button>
 
       {isLoading && (

@@ -11,6 +11,7 @@ interface ResultsSectionProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onSelectCharacter: (id: number) => void;
+  onRefresh: () => void;
 }
 
 export function ResultsSection({
@@ -21,13 +22,19 @@ export function ResultsSection({
   totalPages,
   onPageChange,
   onSelectCharacter,
+  onRefresh,
 }: ResultsSectionProps) {
   const canGoBack = currentPage > 1;
   const canGoForward = currentPage < totalPages;
 
   return (
     <section className={styles.resultsSection}>
-      <h2>Results Section</h2>
+      <div className={styles.resultsHeader}>
+        <h2>Results Section</h2>
+        <button type="button" onClick={onRefresh}>
+          Refresh
+        </button>
+      </div>
 
       {isLoading && (
         <div className={styles.loader} role="status" aria-live="polite">
