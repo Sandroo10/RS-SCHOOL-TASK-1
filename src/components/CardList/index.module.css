@@ -1,0 +1,9 @@
+.cardList {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.emptyResults {
+  margin-top: 16px;
+}
